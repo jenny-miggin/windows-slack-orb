@@ -90,8 +90,8 @@ workflows:
           dir: ./src/scripts
           exclude: SC2148,SC2001,SC1091,SC2086,SC2116,SC2046,SC2005,SC2002
           shell: sh
-      - bats/run:
-          path: ./src/tests
+      # - bats/run:
+      #     path: ./src/tests
       # pack your orb YAML files to a single orb.yml
       # validate the orb.yml file to ensure it is well-formed
       - orb-tools/pack:
