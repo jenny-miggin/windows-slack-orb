@@ -20,70 +20,70 @@ parameters:
 
 
 jobs:
-  integration-test-templates:
-    executor: win/default
-    steps:
-      - slack/notify:
-          event: always
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Current Job: $CIRCLE_JOB"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "This test will @ a normal user, a user ID, and normal group name: <@U8C9ETTUG>, @orbs, @gabriel"
-                  }
-                }
-              ]
-              }
-      - run:
-          name: Verify SLACK_JOB_STATUS is written
-          command: |
-            grep "pass" /tmp/SLACK_JOB_STATUS
-      - slack/notify:
-          template: basic_fail_1
-          mentions: "@orbs"
-          event: always
-      - slack/notify:
-          template: basic_success_1
-          event: always
-      - slack/notify:
-          template: success_tagged_deploy_1
-          event: always
-      - slack/notify:
-          template: basic_on_hold_1
-          event: always
-      - slack/notify:
-          event: pass
-          custom: >
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Sample link using environment variable in markdown <${CIRCLE_BUILD_URL}|LINK >"
-                  }
-                }
-              ]
-            }
-      - slack/notify:
-          debug: true
-          template: basic_success_1
-          event: always
+  # integration-test-templates:
+  #   executor: win/default
+  #   steps:
+  #     - slack/notify:
+  #         event: always
+  #         custom: |
+  #           {
+  #             "blocks": [
+  #               {
+  #                 "type": "section",
+  #                 "text": {
+  #                   "type": "mrkdwn",
+  #                   "text": "Current Job: $CIRCLE_JOB"
+  #                 }
+  #               },
+  #               {
+  #                 "type": "section",
+  #                 "text": {
+  #                   "type": "mrkdwn",
+  #                   "text": "This test will @ a normal user, a user ID, and normal group name: <@U8C9ETTUG>, @orbs, @gabriel"
+  #                 }
+  #               }
+  #             ]
+  #             }
+  #     - run:
+  #         name: Verify SLACK_JOB_STATUS is written
+  #         command: |
+  #           grep "pass" /tmp/SLACK_JOB_STATUS
+  #     - slack/notify:
+  #         template: basic_fail_1
+  #         mentions: "@orbs"
+  #         event: always
+  #     - slack/notify:
+  #         template: basic_success_1
+  #         event: always
+  #     - slack/notify:
+  #         template: success_tagged_deploy_1
+  #         event: always
+  #     - slack/notify:
+  #         template: basic_on_hold_1
+  #         event: always
+  #     - slack/notify:
+  #         event: pass
+  #         custom: >
+  #           {
+  #             "blocks": [
+  #               {
+  #                 "type": "section",
+  #                 "text": {
+  #                   "type": "mrkdwn",
+  #                   "text": "Sample link using environment variable in markdown <${CIRCLE_BUILD_URL}|LINK >"
+  #                 }
+  #               }
+  #             ]
+  #           }
+  #     - slack/notify:
+  #         debug: true
+  #         template: basic_success_1
+  #         event: always
 
 workflows:
 
   test-pack:
-    unless: << pipeline.parameters.run-integration-tests >>
+    # unless: << pipeline.parameters.run-integration-tests >>
     jobs:
       - orb-tools/lint
       - shellcheck/check:
@@ -123,22 +123,22 @@ workflows:
           requires:
             - orb-tools/publish-dev
 
-  integration-test_deploy:
-    when: << pipeline.parameters.run-integration-tests >>
-    jobs:
-      # your integration test jobs go here: essentially, run all your orb's
-      # jobs and commands to ensure they behave as expected. or, run other
-      # integration tests of your choosing
-      - integration-test-templates:
-          context: SLACK_NOTIFICATIONS_TEST
+  # integration-test_deploy:
+  #   when: << pipeline.parameters.run-integration-tests >>
+  #   jobs:
+  #     # your integration test jobs go here: essentially, run all your orb's
+  #     # jobs and commands to ensure they behave as expected. or, run other
+  #     # integration tests of your choosing
+  #     - integration-test-templates:
+  #         context: SLACK_NOTIFICATIONS_TEST
 
-      - orb-tools/dev-promote-prod-from-commit-subject:
-          orb-name: jmi-space/windows-slack
-          context: orb-publishing
-          fail-if-semver-not-indicated: true
-          publish-version-tag: true
-          requires:
-            - integration-test-templates
-          filters:
-            branches:
-              only: main
+  #     - orb-tools/dev-promote-prod-from-commit-subject:
+  #         orb-name: jmi-space/windows-slack
+  #         context: orb-publishing
+  #         fail-if-semver-not-indicated: true
+  #         publish-version-tag: true
+  #         requires:
+  #           - integration-test-templates
+  #         filters:
+  #           branches:
+  #             only: main
