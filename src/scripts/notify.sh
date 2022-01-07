@@ -6,6 +6,7 @@ BuildMessageBody() {
     if [ -n "${SLACK_PARAM_CUSTOM:-}" ]; then
         ModifyCustomTemplate
         # shellcheck disable=SC2016
+        echo "I got here"
         CUSTOM_BODY_MODIFIED=$(echo "$CUSTOM_BODY_MODIFIED" | sed 's/\\\/\\\\\/g' | sed 's/"/\\\"/g' | sed 's/`/\\\`/g')
         T2=$(eval echo \""$CUSTOM_BODY_MODIFIED"\")
     elif [ -n "${SLACK_PARAM_TEMPLATE:-}" ]; then
