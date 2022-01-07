@@ -6,12 +6,12 @@ BuildMessageBody() {
     if [ -n "${SLACK_PARAM_CUSTOM:-}" ]; then
         ModifyCustomTemplate
         # shellcheck disable=SC2016
-        CUSTOM_BODY_MODIFIED=$(echo "$CUSTOM_BODY_MODIFIED" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed 's/`/\\`/g')
+        CUSTOM_BODY_MODIFIED=$(echo "$CUSTOM_BODY_MODIFIED" | sed 's/\\\/\\\\\/g' | sed 's/"/\\\"/g' | sed 's/`/\\\`/g')
         T2=$(eval echo \""$CUSTOM_BODY_MODIFIED"\")
     elif [ -n "${SLACK_PARAM_TEMPLATE:-}" ]; then
         TEMPLATE="\$$SLACK_PARAM_TEMPLATE"
         # shellcheck disable=SC2016
-        T1=$(eval echo "$TEMPLATE" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed 's/`/\\`/g')
+        T1=$(eval echo "$TEMPLATE" | sed 's/\\\/\\\\\/g' | sed 's/"/\\\"/g' | sed 's/`/\\\`/g')
         T2=$(eval echo \""$T1"\")
     else
         echo "Error: No message template selected."
@@ -61,28 +61,6 @@ ModifyCustomTemplate() {
     else
         # In case the text field was set manually.
         CUSTOM_BODY_MODIFIED=$(echo "$SLACK_PARAM_CUSTOM" | jq '.')
-    fi
-}
-
-InstallJq() {
-    if uname -a | grep Darwin > /dev/null 2>&1; then
-        echo "Checking For JQ + CURL: MacOS"
-        command -v jq >/dev/null 2>&1 || HOMEBREW_NO_AUTO_UPDATE=1 brew install jq --quiet
-        return $?
-
-    elif cat /etc/issue | grep Debian > /dev/null 2>&1 || cat /etc/issue | grep Ubuntu > /dev/null 2>&1; then
-        echo "Checking For JQ + CURL: Debian"
-        if [ "$(id -u)" = 0 ]; then export SUDO=""; else # Check if we're root
-            export SUDO="sudo";
-        fi
-        command -v jq >/dev/null 2>&1 || { $SUDO apt -qq update && $SUDO apt -qq install -y jq; }
-        return $?
-
-    elif cat /etc/issue | grep Alpine > /dev/null 2>&1; then
-        echo "Checking For JQ + CURL: Alpine"
-        command -v curl >/dev/null 2>&1 || { echo >&2 "SLACK ORB ERROR: CURL is required. Please install."; exit 1; }
-        command -v jq >/dev/null 2>&1 || { echo >&2 "SLACK ORB ERROR: JQ is required. Please install"; exit 1; }
-        return $?
     fi
 }
 
@@ -153,7 +131,6 @@ if [ "${0#*$ORB_TEST_ENV}" = "$0" ]; then
     CheckEnvVars
     . "/tmp/SLACK_JOB_STATUS"
     ShouldPost
-    InstallJq
     BuildMessageBody
     PostToSlack
 
