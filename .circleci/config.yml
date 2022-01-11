@@ -86,10 +86,10 @@ workflows:
     # unless: << pipeline.parameters.run-integration-tests >>
     jobs:
       - orb-tools/lint
-      - shellcheck/check:
-          dir: ./src/scripts
-          exclude: SC2148,SC2001,SC1091,SC2086,SC2116,SC2046,SC2005,SC2002,SC2016
-          shell: sh
+      # - shellcheck/check:
+      #     dir: ./src/scripts
+      #     exclude: SC2148,SC2001,SC1091,SC2086,SC2116,SC2046,SC2005,SC2002,SC2016
+      #     shell: sh
       # - bats/run:
       #     path: ./src/tests
       # pack your orb YAML files to a single orb.yml
